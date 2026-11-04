@@ -1,0 +1,17 @@
+[general]
+name=Cartographie facile
+qgisMinimumVersion=3.28
+description=Composez des cartes QGIS avec modèles intégrés et personnalisés, aperçu, styles modernes et exports PDF, PNG ou SVG.
+version=1.3.2
+author=Mamadou Thiam
+email=mamadou.thiam16@unchk.edu.sn
+homepage=https://github.com/momothiam-dev/cartographie-facile/blob/main/README.md
+repository=https://github.com/momothiam-dev/cartographie-facile
+tracker=https://github.com/momothiam-dev/cartographie-facile/issues
+license=GPL-2.0-or-later
+tags=cartography,layout,map export,cartographie
+changelog=1.3.2 - Added built-in reusable layout templates and fixed template format selection.
+about=Cartographie facile automatise la composition d'une mise en page à partir des couches, styles et SCR du projet QGIS ouvert. Elle prend en charge les modèles réutilisables, un aperçu avant export, plusieurs designs et couleurs, le logo, la police, l'affichage des étiquettes, la résolution PDF/PNG et l'export SVG. Objectif : réduire les tâches répétitives et faciliter la production de cartes modifiables dans QGIS. Les données sources ne sont pas modifiées ; les exports ne peuvent pas écraser le projet ou les fichiers des couches.
+icon=
+experimental=False
+deprecated=False
