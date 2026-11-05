@@ -574,7 +574,7 @@ class CartographieDialog(QDialog):
                 min(max(480, largeur + 40), zone.width()) if zone else largeur + 40,
                 min(max(320, hauteur + 90), zone.height()) if zone else hauteur + 90,
             )
-            return dialogue.exec_() == QDialog.DialogCode.Accepted
+            return dialogue.exec() == QDialog.DialogCode.Accepted
         finally:
             if os.path.exists(chemin):
                 os.unlink(chemin)
