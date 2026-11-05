@@ -59,7 +59,9 @@ class CartographieFacile:
         if self.dialog is None:
             self.dialog = CartographieDialog(self.iface)
         self.dialog.setWindowState(
-            self.dialog.windowState() & ~Qt.WindowMaximized & ~Qt.WindowFullScreen
+            self.dialog.windowState()
+            & ~Qt.WindowState.WindowMaximized
+            & ~Qt.WindowState.WindowFullScreen
         )
         self.dialog.show()
         self.dialog.raise_()

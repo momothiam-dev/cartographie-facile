@@ -152,10 +152,10 @@ class CartographieDialog(QDialog):
         self.emprise.addItem("Vue actuelle du canevas QGIS", "canvas")
         formulaire.addRow("Emprise de la carte :", self.emprise)
         self.unites_echelle = QComboBox()
-        self.unites_echelle.addItem("Kilomètres", QgsUnitTypes.DistanceKilometers)
-        self.unites_echelle.addItem("Mètres", QgsUnitTypes.DistanceMeters)
-        self.unites_echelle.addItem("Miles", QgsUnitTypes.DistanceMiles)
-        self.unites_echelle.addItem("Pieds", QgsUnitTypes.DistanceFeet)
+        self.unites_echelle.addItem("Kilomètres", QgsUnitTypes.DistanceUnit.DistanceKilometers)
+        self.unites_echelle.addItem("Mètres", QgsUnitTypes.DistanceUnit.DistanceMeters)
+        self.unites_echelle.addItem("Miles", QgsUnitTypes.DistanceUnit.DistanceMiles)
+        self.unites_echelle.addItem("Pieds", QgsUnitTypes.DistanceUnit.DistanceFeet)
         formulaire.addRow("Unités de l'échelle :", self.unites_echelle)
         self.marge_emprise = QDoubleSpinBox()
         self.marge_emprise.setDecimals(1)
@@ -263,12 +263,12 @@ class CartographieDialog(QDialog):
 
         self.zone_defilante = QScrollArea(self)
         self.zone_defilante.setWidgetResizable(True)
-        self.zone_defilante.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.zone_defilante.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.zone_defilante.setWidget(contenu)
         racine.addWidget(self.zone_defilante, 1)
 
-        boutons = QDialogButtonBox(QDialogButtonBox.Close)
-        self.bouton_creer = boutons.addButton("Créer la carte", QDialogButtonBox.AcceptRole)
+        boutons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        self.bouton_creer = boutons.addButton("Créer la carte", QDialogButtonBox.ButtonRole.AcceptRole)
         self.bouton_creer.clicked.connect(self._creer_carte)
         boutons.rejected.connect(self.close)
         racine.addWidget(boutons)
@@ -293,28 +293,28 @@ class CartographieDialog(QDialog):
         return {
             "Atlas moderne": {
                 "format": ["A4", "landscape"], "design": "metro", "margin": 8,
-                "units": QgsUnitTypes.DistanceKilometers, "labels": True,
+                "units": QgsUnitTypes.DistanceUnit.DistanceKilometers, "labels": True,
                 "show_legend": True, "show_north": True, "show_scale": True,
                 "show_grid": False, "export_png": True, "export_svg": False,
                 "preview": True, "pdf_dpi": 300, "png_dpi": 180,
             },
             "Thématique océan": {
                 "format": ["A4", "landscape"], "design": "ocean", "margin": 8,
-                "units": QgsUnitTypes.DistanceKilometers, "labels": True,
+                "units": QgsUnitTypes.DistanceUnit.DistanceKilometers, "labels": True,
                 "show_legend": True, "show_north": True, "show_scale": True,
                 "show_grid": True, "grid_interval": 10000, "export_png": True,
                 "export_svg": False, "preview": True, "pdf_dpi": 300, "png_dpi": 180,
             },
             "Territoire du Sahel": {
                 "format": ["A3", "landscape"], "design": "sahel", "margin": 10,
-                "units": QgsUnitTypes.DistanceKilometers, "labels": True,
+                "units": QgsUnitTypes.DistanceUnit.DistanceKilometers, "labels": True,
                 "show_legend": True, "show_north": True, "show_scale": True,
                 "show_grid": False, "export_png": True, "export_svg": False,
                 "preview": True, "pdf_dpi": 300, "png_dpi": 180,
             },
             "Rapport épuré": {
                 "format": ["A4", "portrait"], "design": "minimal", "margin": 5,
-                "units": QgsUnitTypes.DistanceKilometers, "labels": True,
+                "units": QgsUnitTypes.DistanceUnit.DistanceKilometers, "labels": True,
                 "show_legend": True, "show_north": False, "show_scale": True,
                 "show_grid": False, "export_png": True, "export_svg": False,
                 "preview": True, "pdf_dpi": 300, "png_dpi": 180,
@@ -455,8 +455,8 @@ class CartographieDialog(QDialog):
             return
         if nom in modeles and QMessageBox.question(
             self, "Remplacer le modèle ?", f"Le modèle « {nom} » existe. Le remplacer ?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No,
-        ) != QMessageBox.Yes:
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
+        ) != QMessageBox.StandardButton.Yes:
             return
         modeles[nom] = self._options_modele()
         QSettings().setValue(
@@ -496,8 +496,8 @@ class CartographieDialog(QDialog):
             return
         if QMessageBox.question(
             self, "Supprimer le modèle ?", f"Supprimer le modèle « {nom} » ?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No,
-        ) != QMessageBox.Yes:
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
+        ) != QMessageBox.StandardButton.Yes:
             return
         try:
             modeles = self._lire_modeles()
@@ -543,7 +543,7 @@ class CartographieDialog(QDialog):
             reglages = QgsLayoutExporter.ImageExportSettings()
             reglages.dpi = min(90, self.resolution_png.value())
             resultat = exportateur.exportToImage(chemin, reglages)
-            if resultat != QgsLayoutExporter.Success:
+            if resultat != QgsLayoutExporter.ExportResult.Success:
                 raise RuntimeError(f"Échec du rendu de l’aperçu (code QGIS {resultat}).")
             image = QPixmap(chemin)
             if image.isNull():
@@ -557,16 +557,16 @@ class CartographieDialog(QDialog):
             largeur = min(image.width(), zone.width() - 80) if zone else image.width()
             hauteur = min(image.height(), zone.height() - 150) if zone else image.height()
             etiquette = QLabel()
-            etiquette.setAlignment(Qt.AlignCenter)
+            etiquette.setAlignment(Qt.AlignmentFlag.AlignCenter)
             etiquette.setPixmap(
                 image.scaled(
                     max(1, largeur), max(1, hauteur),
-                    Qt.KeepAspectRatio, Qt.SmoothTransformation,
+                    Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation,
                 )
             )
             disposition.addWidget(etiquette, 1)
-            boutons = QDialogButtonBox(QDialogButtonBox.Cancel)
-            continuer = boutons.addButton("Continuer l’export", QDialogButtonBox.AcceptRole)
+            boutons = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel)
+            continuer = boutons.addButton("Continuer l’export", QDialogButtonBox.ButtonRole.AcceptRole)
             continuer.clicked.connect(dialogue.accept)
             boutons.rejected.connect(dialogue.reject)
             disposition.addWidget(boutons)
@@ -574,7 +574,7 @@ class CartographieDialog(QDialog):
                 min(max(480, largeur + 40), zone.width()) if zone else largeur + 40,
                 min(max(320, hauteur + 90), zone.height()) if zone else hauteur + 90,
             )
-            return dialogue.exec_() == QDialog.Accepted
+            return dialogue.exec_() == QDialog.DialogCode.Accepted
         finally:
             if os.path.exists(chemin):
                 os.unlink(chemin)
@@ -598,7 +598,7 @@ class CartographieDialog(QDialog):
             layer
             for layer in self.project.mapLayers().values()
             if layer.isValid()
-            and layer.type() in (QgsMapLayer.VectorLayer, QgsMapLayer.RasterLayer)
+            and layer.type() in (QgsMapLayer.LayerType.VectorLayer, QgsMapLayer.LayerType.RasterLayer)
             and (
                 not isinstance(layer, QgsVectorLayer)
                 or layer.featureCount() > 0
@@ -608,13 +608,13 @@ class CartographieDialog(QDialog):
     def _actualiser_couches(self):
         couche_active = self.iface.activeLayer()
         anciennes_couches = {
-            self.couches_contexte.item(index).data(Qt.UserRole)
+            self.couches_contexte.item(index).data(Qt.ItemDataRole.UserRole)
             for index in range(self.couches_contexte.count())
         } if hasattr(self, "couches_contexte") else set()
         anciens_choix = {
-            self.couches_contexte.item(index).data(Qt.UserRole)
+            self.couches_contexte.item(index).data(Qt.ItemDataRole.UserRole)
             for index in range(self.couches_contexte.count())
-            if self.couches_contexte.item(index).checkState() == Qt.Checked
+            if self.couches_contexte.item(index).checkState() == Qt.CheckState.Checked
         } if hasattr(self, "couches_contexte") else set()
 
         self.couche_principale.blockSignals(True)
@@ -635,10 +635,10 @@ class CartographieDialog(QDialog):
             if layer.id() == couche_principale_id:
                 continue
             item = QListWidgetItem(layer.name())
-            item.setData(Qt.UserRole, layer.id())
-            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setData(Qt.ItemDataRole.UserRole, layer.id())
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             default_checked = layer.id() in anciens_choix if anciennes_couches else True
-            item.setCheckState(Qt.Checked if default_checked else Qt.Unchecked)
+            item.setCheckState(Qt.CheckState.Checked if default_checked else Qt.CheckState.Unchecked)
             self.couches_contexte.addItem(item)
 
         if couches and not self.crs.text().strip():
@@ -788,16 +788,16 @@ class CartographieDialog(QDialog):
             return
 
         contexte_ids = {
-            self.couches_contexte.item(index).data(Qt.UserRole)
+            self.couches_contexte.item(index).data(Qt.ItemDataRole.UserRole)
             for index in range(self.couches_contexte.count())
-            if self.couches_contexte.item(index).checkState() == Qt.Checked
+            if self.couches_contexte.item(index).checkState() == Qt.CheckState.Checked
         }
         ids_requis = contexte_ids | {principale.id()}
         ordre_couches = self.project.layerTreeRoot().layerOrder()
         couches = [
             layer for layer in ordre_couches
             if layer.id() in ids_requis and layer.isValid()
-            and layer.type() in (QgsMapLayer.VectorLayer, QgsMapLayer.RasterLayer)
+            and layer.type() in (QgsMapLayer.LayerType.VectorLayer, QgsMapLayer.LayerType.RasterLayer)
         ]
         if principale not in couches:
             couches.append(principale)
@@ -828,10 +828,10 @@ class CartographieDialog(QDialog):
                 "Les fichiers suivants existent déjà :\n"
                 + "\n".join(str(path) for path in fichiers_existants)
                 + "\n\nVoulez-vous les remplacer ?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
             )
-            if reponse != QMessageBox.Yes:
+            if reponse != QMessageBox.StandardButton.Yes:
                 return
 
         nom_layout = f"Carte - {self.titre.text().strip()}"
@@ -841,10 +841,10 @@ class CartographieDialog(QDialog):
                 self,
                 "Mise en page déjà présente",
                 f"La mise en page « {nom_layout} » existe. La remplacer ?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
             )
-            if reponse != QMessageBox.Yes:
+            if reponse != QMessageBox.StandardButton.Yes:
                 return
 
         try:
@@ -865,20 +865,20 @@ class CartographieDialog(QDialog):
             )
             try:
                 resultat_pdf = exportateur.exportToPdf(str(pdf_temporaire), pdf_settings)
-                if resultat_pdf != QgsLayoutExporter.Success:
+                if resultat_pdf != QgsLayoutExporter.ExportResult.Success:
                     raise RuntimeError(f"Échec de l'export PDF (code QGIS {resultat_pdf}).")
 
                 if png_temporaire:
                     image_settings = QgsLayoutExporter.ImageExportSettings()
                     image_settings.dpi = self.resolution_png.value()
                     resultat_png = exportateur.exportToImage(str(png_temporaire), image_settings)
-                    if resultat_png != QgsLayoutExporter.Success:
+                    if resultat_png != QgsLayoutExporter.ExportResult.Success:
                         raise RuntimeError(f"Échec de l'export PNG (code QGIS {resultat_png}).")
                 if svg_temporaire:
                     svg_settings = QgsLayoutExporter.SvgExportSettings()
                     svg_settings.dpi = self.resolution_pdf.value()
                     resultat_svg = exportateur.exportToSvg(str(svg_temporaire), svg_settings)
-                    if resultat_svg != QgsLayoutExporter.Success:
+                    if resultat_svg != QgsLayoutExporter.ExportResult.Success:
                         raise RuntimeError(f"Échec de l'export SVG (code QGIS {resultat_svg}).")
 
                 os.replace(str(pdf_temporaire), str(pdf_path))
@@ -1002,7 +1002,7 @@ class CartographieDialog(QDialog):
             )
             self._ajouter_texte(
                 layout, "N\n↑", fleche_x + 1, haut_carte + 5, 8, 15,
-                11, palette["title"], True, Qt.AlignHCenter,
+                11, palette["title"], True, Qt.AlignmentFlag.AlignHCenter,
             )
 
         if self.afficher_echelle.isChecked():
@@ -1199,7 +1199,7 @@ class CartographieDialog(QDialog):
         elif layer.geometryType() == 0:
             self._ajouter_forme(
                 layout, x + 2.3, y + 0.4, 4.5, 4.5, couleur, "#66736b", "0.2",
-                QgsLayoutItemShape.Ellipse,
+                QgsLayoutItemShape.Shape.Ellipse,
             )
         else:
             self._ajouter_forme(layout, x + 1, y + 0.2, 6, 5, couleur, "#66736b", "0.2")
@@ -1249,14 +1249,14 @@ class CartographieDialog(QDialog):
         grille.setCrs(crs_carte)
         grille.setIntervalX(self.intervalle_grille.value())
         grille.setIntervalY(self.intervalle_grille.value())
-        grille.setStyle(QgsLayoutItemMapGrid.Solid)
+        grille.setStyle(QgsLayoutItemMapGrid.GridStyle.Solid)
         grille.setLineSymbol(QgsLineSymbol.createSimple({
             "line_color": palette["grid"],
             "line_width": "0.15",
             "line_style": "dot",
         }))
         grille.setAnnotationEnabled(True)
-        grille.setAnnotationFormat(QgsLayoutItemMapGrid.Decimal)
+        grille.setAnnotationFormat(QgsLayoutItemMapGrid.AnnotationFormat.Decimal)
         grille.setAnnotationPrecision(0 if not crs_carte.isGeographic() else 2)
         font_grille = self.police.currentFont()
         font_grille.setPointSize(7)
@@ -1320,11 +1320,11 @@ class CartographieDialog(QDialog):
             lat = (extent.yMinimum() + extent.yMaximum()) / 2
             distance *= 111_320 * max(0.1, abs(math.cos(math.radians(lat))))
         units = self.unites_echelle.currentData()
-        if units == QgsUnitTypes.DistanceKilometers:
+        if units == QgsUnitTypes.DistanceUnit.DistanceKilometers:
             value = distance / 1000 / 4
-        elif units == QgsUnitTypes.DistanceMiles:
+        elif units == QgsUnitTypes.DistanceUnit.DistanceMiles:
             value = distance / 1609.344 / 4
-        elif units == QgsUnitTypes.DistanceFeet:
+        elif units == QgsUnitTypes.DistanceUnit.DistanceFeet:
             value = distance * 3.28084 / 4
         else:
             value = distance / 4
@@ -1339,15 +1339,15 @@ class CartographieDialog(QDialog):
 
     def _libelle_unite_echelle(self):
         return {
-            QgsUnitTypes.DistanceKilometers: "km",
-            QgsUnitTypes.DistanceMeters: "m",
-            QgsUnitTypes.DistanceMiles: "mi",
-            QgsUnitTypes.DistanceFeet: "ft",
+            QgsUnitTypes.DistanceUnit.DistanceKilometers: "km",
+            QgsUnitTypes.DistanceUnit.DistanceMeters: "m",
+            QgsUnitTypes.DistanceUnit.DistanceMiles: "mi",
+            QgsUnitTypes.DistanceUnit.DistanceFeet: "ft",
         }.get(self.unites_echelle.currentData(), "")
 
     @staticmethod
     def _ajouter_forme(layout, x, y, width, height, couleur, contour=None, epaisseur="0.2",
-                       forme=QgsLayoutItemShape.Rectangle):
+                       forme=QgsLayoutItemShape.Shape.Rectangle):
         item = QgsLayoutItemShape(layout)
         item.setShapeType(forme)
         item.setSymbol(QgsFillSymbol.createSimple({
@@ -1362,7 +1362,7 @@ class CartographieDialog(QDialog):
         return item
 
     def _ajouter_texte(self, layout, texte, x, y, width, height, taille=9, couleur="#28352e",
-                       gras=False, alignement=Qt.AlignLeft):
+                       gras=False, alignement=Qt.AlignmentFlag.AlignLeft):
         item = QgsLayoutItemLabel(layout)
         item.setText(texte)
         font = self.police.currentFont()
@@ -1371,7 +1371,7 @@ class CartographieDialog(QDialog):
         item.setFont(font)
         item.setFontColor(QColor(couleur))
         item.setHAlign(alignement)
-        item.setVAlign(Qt.AlignVCenter)
+        item.setVAlign(Qt.AlignmentFlag.AlignVCenter)
         item.setMargin(0)
         layout.addLayoutItem(item)
         item.attemptMove(QgsLayoutPoint(x, y))

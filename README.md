@@ -11,6 +11,8 @@ Short English description: Cartographie facile helps QGIS users compose
 print-ready map layouts from project layers and export them to PDF, PNG or SVG.
 
 Extension pour QGIS 3.28 ou supérieur, créée par **Mamadou Thiam**.
+Le code utilise les enums Qt et QGIS scopés pour rester compatible avec les
+versions Qt 5 et Qt 6 prises en charge par QGIS.
 
 ## Objectif, méthode et avantages
 
