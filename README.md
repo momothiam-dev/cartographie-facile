@@ -34,6 +34,10 @@ Cela permet de gagner du temps, d'obtenir une présentation cohérente, de chois
 
 Si l'extension n'apparaît pas tout de suite, redémarrez QGIS.
 
+Après publication et validation dans le dépôt officiel QGIS, recherchez **Cartographie facile**
+dans **Extensions → Installer/Gérer les extensions…** pour l'installer directement, sans
+télécharger le ZIP manuellement. La mise en ligne officielle doit d'abord être approuvée.
+
 ## Création d'une carte
 
 1. Ouvrez votre projet QGIS et vérifiez les noms, styles et systèmes de coordonnées des couches.
