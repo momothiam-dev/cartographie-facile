@@ -7,6 +7,7 @@ class CartographieFacile:
         self.iface = iface
         self.action = None
         self.about_action = None
+        self.guide_action = None
         self.dialog = None
 
     def initGui(self):
@@ -15,6 +16,10 @@ class CartographieFacile:
         self.action.triggered.connect(self.run)
         self.iface.addPluginToMenu("&Cartographie facile", self.action)
         self.iface.addToolBarIcon(self.action)
+
+        self.guide_action = QAction("Mode d’emploi…", self.iface.mainWindow())
+        self.guide_action.triggered.connect(self.show_guide)
+        self.iface.addPluginToMenu("&Cartographie facile", self.guide_action)
 
         self.about_action = QAction("À propos…", self.iface.mainWindow())
         self.about_action.triggered.connect(self.about)
@@ -28,6 +33,9 @@ class CartographieFacile:
         if self.about_action is not None:
             self.iface.removePluginMenu("&Cartographie facile", self.about_action)
             self.about_action = None
+        if self.guide_action is not None:
+            self.iface.removePluginMenu("&Cartographie facile", self.guide_action)
+            self.guide_action = None
         if self.dialog is not None:
             self.dialog.close()
             self.dialog = None
@@ -52,6 +60,11 @@ class CartographieFacile:
             "les exports. Une confirmation est demandée avant de remplacer un export.</p>"
             "<p>Créée par Mamadou Thiam.</p>",
         )
+
+    def show_guide(self):
+        from .dialog import afficher_mode_emploi
+
+        afficher_mode_emploi(self.iface.mainWindow())
 
     def run(self):
         from .dialog import CartographieDialog

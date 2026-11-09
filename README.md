@@ -44,9 +44,10 @@ télécharger le ZIP manuellement. La mise en ligne officielle doit d'abord êtr
 
 1. Ouvrez votre projet QGIS et vérifiez les noms, styles et systèmes de coordonnées des couches.
 2. Lancez **Extensions → Cartographie facile → Créer une carte…**.
-3. Sélectionnez un modèle dans la liste et cliquez sur **Charger** pour appliquer ses réglages, ou choisissez vos options manuellement. Quatre modèles d'exemple sont inclus dès l'installation.
-4. Choisissez où enregistrer le PDF, puis cliquez sur **Créer la carte**.
-5. Si un PDF ou un PNG du même nom existe déjà, l'extension demande confirmation avant de le remplacer.
+3. Pour obtenir de l'aide, ouvrez **Extensions → Cartographie facile → Mode d’emploi…** ou cliquez sur **Mode d’emploi** dans la fenêtre de création.
+4. Sélectionnez un modèle dans la liste et cliquez sur **Charger** pour appliquer ses réglages, ou choisissez vos options manuellement. Quatre modèles d'exemple sont inclus dès l'installation.
+5. Choisissez où enregistrer le PDF, puis cliquez sur **Créer la carte**.
+6. Si un PDF ou un PNG du même nom existe déjà, l'extension demande confirmation avant de le remplacer.
 
 La mise en page est ajoutée au projet QGIS ouvert. Enregistrez le projet pour la conserver et la modifier plus tard. Les résolutions PDF et PNG sont configurables (300 et 180 dpi par défaut). Le fichier SVG est facultatif.
 

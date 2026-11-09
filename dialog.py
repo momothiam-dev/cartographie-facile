@@ -28,6 +28,7 @@ from qgis.PyQt.QtWidgets import (
     QDoubleSpinBox,
     QScrollArea,
     QSpinBox,
+    QTextBrowser,
     QVBoxLayout,
     QWidget,
 )
@@ -56,6 +57,92 @@ from qgis.core import (
     QgsUnitTypes,
     QgsVectorLayer,
 )
+
+
+def afficher_mode_emploi(parent=None):
+    dialogue = QDialog(parent)
+    dialogue.setWindowTitle("Mode d’emploi — Cartographie facile")
+    dialogue.resize(720, 680)
+    disposition = QVBoxLayout(dialogue)
+    contenu = QTextBrowser(dialogue)
+    contenu.setHtml(
+        """
+        <h2>Créer votre première carte</h2>
+        <ol>
+          <li>Ouvrez un projet QGIS et vérifiez que les couches à cartographier
+          sont chargées, valides et affichées avec les styles souhaités.</li>
+          <li>Dans <b>Extensions → Cartographie facile</b>, choisissez
+          <b>Créer une carte…</b>. Vous pouvez aussi ouvrir ce guide depuis le
+          bouton <b>Mode d’emploi</b> en bas de la fenêtre.</li>
+          <li>Choisissez une couche principale, réglez la présentation et
+          l’emprise, puis indiquez le fichier PDF de sortie.</li>
+          <li>Cliquez sur <b>Créer la carte</b>. Si l’aperçu est activé,
+          vérifiez-le et choisissez de continuer ou d’annuler l’export.</li>
+          <li>La mise en page est ajoutée au projet QGIS. Enregistrez le projet
+          pour la conserver et la modifier plus tard.</li>
+        </ol>
+
+        <h2>Modèles et couches</h2>
+        <ul>
+          <li>Un modèle applique des réglages de mise en page. Sélectionnez-le,
+          puis cliquez sur <b>Charger</b>. Les modèles intégrés sont signalés
+          par une étoile.</li>
+          <li><b>Enregistrer</b> mémorise vos réglages sous un nom; les modèles
+          personnalisés peuvent être chargés ou supprimés. Un modèle ne mémorise
+          pas les couches ni le chemin d’export.</li>
+          <li>La <b>couche principale</b> est le sujet de la carte. Les couches
+          de contexte sont les autres couches du projet; décochez celles que
+          vous ne voulez pas afficher. Utilisez <b>Actualiser les couches</b>
+          après avoir modifié le projet.</li>
+          <li>Pour une couche vectorielle, un champ numérique peut être choisi
+          afin d’afficher sa somme dans le résumé. Vérifiez que ses valeurs et
+          ses unités sont cohérentes.</li>
+        </ul>
+
+        <h2>Titre et présentation</h2>
+        <ul>
+          <li>Le titre est nécessaire. Le sous-titre et les sources sont
+          facultatifs; indiquez l’origine et la date des données si utile.</li>
+          <li>Choisissez le <b>SCR</b> de la carte, le format A4/A3 et
+          l’orientation. Un code comme <code>EPSG:32631</code> peut être saisi.
+          Assurez-vous que les couches ont un SCR correctement défini.</li>
+          <li>Choisissez l’un des designs, une police et éventuellement une
+          couleur d’accent. Un logo PNG, JPG ou SVG est facultatif.</li>
+          <li>L’<b>emprise</b> peut englober les couches sélectionnées, la seule
+          couche principale, ou reprendre la vue actuelle du canevas QGIS.
+          Réglez la marge si nécessaire.</li>
+          <li>L’échelle fixe est facultative. Sinon, l’extension calcule
+          l’étendue de la carte à partir de l’emprise et de la mise en page.</li>
+        </ul>
+
+        <h2>Éléments cartographiques et exports</h2>
+        <ul>
+          <li>Activez ou désactivez la légende, la flèche nord, l’échelle
+          graphique et la grille de coordonnées. Le pas de grille est exprimé
+          dans l’unité du SCR : généralement en mètres pour un SCR projeté,
+          en degrés pour un SCR géographique.</li>
+          <li>L’option d’étiquettes agit sur la mise en page, sans changer les
+          réglages des couches du projet.</li>
+          <li>Choisissez un fichier PDF avec <b>Parcourir</b>. Le PDF est
+          l’export principal; l’aperçu PNG et le fichier SVG sont facultatifs.
+          Vous pouvez régler les résolutions en dpi.</li>
+          <li>Si un fichier d’export existe déjà, l’extension demande votre
+          accord avant de le remplacer. Elle refuse d’écraser le projet QGIS
+          ou les fichiers des couches.</li>
+        </ul>
+
+        <h2>Conseil avant diffusion</h2>
+        <p>Relisez la carte dans QGIS : SCR, données, légende, étiquettes,
+        unités, échelle, grille, sources et lisibilité. L’extension automatise
+        la composition, mais ne remplace pas la vérification cartographique
+        ni l’analyse SIG.</p>
+        """
+    )
+    disposition.addWidget(contenu)
+    boutons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+    boutons.rejected.connect(dialogue.close)
+    disposition.addWidget(boutons)
+    dialogue.exec()
 
 
 class CartographieDialog(QDialog):
@@ -268,6 +355,10 @@ class CartographieDialog(QDialog):
         racine.addWidget(self.zone_defilante, 1)
 
         boutons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        bouton_aide = boutons.addButton(
+            "Mode d’emploi", QDialogButtonBox.ButtonRole.HelpRole
+        )
+        bouton_aide.clicked.connect(lambda: afficher_mode_emploi(self))
         self.bouton_creer = boutons.addButton("Créer la carte", QDialogButtonBox.ButtonRole.AcceptRole)
         self.bouton_creer.clicked.connect(self._creer_carte)
         boutons.rejected.connect(self.close)
