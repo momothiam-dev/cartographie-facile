@@ -62,6 +62,7 @@ La mise en page est ajoutée au projet QGIS ouvert. Enregistrez le projet pour l
 - Emprise calculée depuis les couches sélectionnées, la couche principale ou la vue actuelle du canevas.
 - Marge autour de l'emprise et échelle d'impression fixe facultative.
 - Légende, flèche nord, échelle graphique et grille de coordonnées activables séparément.
+- La légende répartit automatiquement les catégories en plusieurs colonnes lorsqu'elles dépassent la hauteur disponible. Le nombre d'entités n'est pas ajouté à la carte ; seule la somme facultative du champ numérique choisi peut figurer dans le résumé.
 - Option pour conserver ou masquer les étiquettes dans la mise en page sans changer les réglages des couches du projet.
 - Unités de l'échelle en kilomètres, mètres, miles ou pieds.
 - Pas du quadrillage exprimé dans les unités du SCR : les mètres pour un SCR projeté, les degrés pour un SCR géographique.

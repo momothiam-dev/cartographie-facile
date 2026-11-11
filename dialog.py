@@ -1208,25 +1208,16 @@ class CartographieDialog(QDialog):
             layout, x_interne, y + 24, largeur_interne, 0.35, palette["rule"]
         )
 
-        haut_liste = y + 28
-        bas_liste = y + height - 31
         groupes = [(layer, items)]
         for contexte in context_layers:
             contexte_items = self._items_legende(contexte)
             if contexte_items:
                 groupes.append((contexte, contexte_items))
 
-        nombre_lignes = sum(1 + len(group_items) for _, group_items in groupes)
-        hauteur_ligne = max(5.5, min(12.0, (bas_liste - haut_liste) / max(1, nombre_lignes)))
-        taille_texte = 8 if hauteur_ligne >= 8 else 7
-        position_y = haut_liste
+        lignes = []
         for groupe_index, (groupe_layer, group_items) in enumerate(groupes):
             if groupe_index:
-                self._ajouter_texte(
-                    layout, groupe_layer.name(), x_interne, position_y,
-                    largeur_interne, hauteur_ligne, taille_texte, palette["muted"], True,
-                )
-                position_y += hauteur_ligne
+                lignes.append((groupe_layer, None, groupe_layer.name(), True))
             for item in group_items:
                 symbole = item.symbol() if hasattr(item, "symbol") else item[1]
                 libelle = item.label() if hasattr(item, "label") else str(item[0])
@@ -1235,40 +1226,80 @@ class CartographieDialog(QDialog):
                     or libelle == groupe_layer.name()
                     or isinstance(groupe_layer, QgsRasterLayer)
                 ):
-                    libelle = "Entités"
-                if isinstance(groupe_layer, QgsRasterLayer):
-                    libelle = groupe_layer.name()
+                    libelle = ""
                 if symbole is None and not isinstance(groupe_layer, QgsRasterLayer):
                     continue
+                lignes.append((groupe_layer, symbole, libelle, False))
+
+        haut_liste = y + 28
+        champ_resume = (
+            self.champs_statistiques.currentData()
+            if isinstance(layer, QgsVectorLayer) else None
+        )
+        hauteur_resume = 18 if champ_resume else 0
+        bas_liste = y + height - 6 - hauteur_resume
+        hauteur_disponible = max(0, bas_liste - haut_liste)
+        nombre_max_lignes = max(1, int(hauteur_disponible / 5.5))
+        nombre_colonnes = max(1, math.ceil(len(lignes) / nombre_max_lignes))
+        lignes_par_colonne = max(1, math.ceil(len(lignes) / nombre_colonnes))
+        hauteur_ligne = min(
+            9.0, hauteur_disponible / lignes_par_colonne
+        ) if hauteur_disponible else 0
+        espace_colonnes = 3 if nombre_colonnes > 1 else 0
+        largeur_colonne = max(
+            0,
+            (largeur_interne - espace_colonnes * (nombre_colonnes - 1))
+            / nombre_colonnes,
+        )
+        taille_texte = 8 if largeur_colonne >= 55 else 7 if largeur_colonne >= 30 else 6
+
+        for colonne in range(nombre_colonnes):
+            debut = colonne * lignes_par_colonne
+            fin = min(debut + lignes_par_colonne, len(lignes))
+            x_colonne = x_interne + colonne * (largeur_colonne + espace_colonnes)
+            if colonne:
+                self._ajouter_forme(
+                    layout,
+                    x_colonne - espace_colonnes / 2,
+                    haut_liste,
+                    0.3,
+                    hauteur_disponible,
+                    palette["rule"],
+                )
+            for index in range(debut, fin):
+                groupe_layer, symbole, libelle, est_entete = lignes[index]
+                position_y = haut_liste + (index - debut) * hauteur_ligne
+                if est_entete:
+                    self._ajouter_texte(
+                        layout, libelle, x_colonne, position_y,
+                        largeur_colonne, hauteur_ligne, taille_texte,
+                        palette["muted"], True,
+                    )
+                    continue
                 self._ajouter_symbole_legende(
-                    layout, groupe_layer, symbole, x_interne,
+                    layout, groupe_layer, symbole, x_colonne,
                     position_y + (hauteur_ligne - 5) / 2,
                 )
-                self._ajouter_texte(
-                    layout, libelle, x_interne + 11, position_y,
-                    largeur_interne - 12, hauteur_ligne, taille_texte, palette["text"],
-                )
-                position_y += hauteur_ligne
+                if libelle:
+                    self._ajouter_texte(
+                        layout, libelle, x_colonne + 9, position_y,
+                        max(1, largeur_colonne - 9), hauteur_ligne,
+                        taille_texte, palette["text"],
+                    )
 
-        resume_y = max(position_y + 2, bas_liste + 2)
-        if isinstance(layer, QgsVectorLayer) and resume_y < y + height - 14:
+        if champ_resume:
+            resume_y = y + height - 18
             self._ajouter_forme(
-                layout, x_interne, resume_y, largeur_interne, 0.35, palette["rule"]
+                layout, x_interne, resume_y, largeur_interne, 0.35,
+                palette["rule"],
             )
             self._ajouter_texte(layout, "RÉSUMÉ", x_interne, resume_y + 3,
                                 largeur_interne, 6, 8, palette["title"], True)
             self._ajouter_texte(
-                layout, f"Entités : {layer.featureCount():,}".replace(",", " "),
-                x_interne, resume_y + 10, largeur_interne, 6, 8, palette["text"],
+                layout, f"Somme {champ_resume} : "
+                f"{self._somme_champ(layer, champ_resume):,.2f}".replace(",", " "),
+                x_interne, resume_y + 10, largeur_interne, 7, 7, palette["text"],
             )
-            field_name = self.champs_statistiques.currentData()
-            if field_name:
-                total = self._somme_champ(layer, field_name)
-                self._ajouter_texte(
-                    layout,
-                    f"Somme {field_name} : {total:,.2f}".replace(",", " "),
-                    x_interne, resume_y + 17, largeur_interne, 8, 7, palette["text"],
-                )
 
     @staticmethod
     def _items_legende(layer):

@@ -2,7 +2,7 @@
 name=Cartographie facile
 qgisMinimumVersion=3.28
 description=Compose QGIS map layouts with reusable templates, modern styles, preview, and PDF, PNG or SVG export.
-version=1.3.5
+version=1.3.6
 author=Mamadou Thiam
 email=mamadou.thiam16@unchk.edu.sn
 homepage=https://github.com/momothiam-dev/cartographie-facile/blob/main/README.md
@@ -10,7 +10,7 @@ repository=https://github.com/momothiam-dev/cartographie-facile
 tracker=https://github.com/momothiam-dev/cartographie-facile/issues
 license=GPL-2.0-or-later
 tags=cartography,layout,map export,cartographie
-changelog=1.3.5 - Added an in-plugin French user guide available from the interface and plugin menu. 1.3.4 - Replaced the deprecated Qt dialog exec_ method for Qt 6 compatibility. 1.3.3 - Updated Qt and QGIS enum usage for Qt 6 compatibility. 1.3.2 - Added built-in reusable layout templates and fixed template format selection.
+changelog=1.3.6 - Split long legends into multiple columns and removed the feature count from the map summary. 1.3.5 - Added an in-plugin French user guide available from the interface and plugin menu. 1.3.4 - Replaced the deprecated Qt dialog exec_ method for Qt 6 compatibility. 1.3.3 - Updated Qt and QGIS enum usage for Qt 6 compatibility. 1.3.2 - Added built-in reusable layout templates and fixed template format selection.
 about=Cartographie facile automatise la composition d'une mise en page à partir des couches, styles et SCR du projet QGIS ouvert. Elle prend en charge les modèles réutilisables, un aperçu avant export, plusieurs designs et couleurs, le logo, la police, l'affichage des étiquettes, la résolution PDF/PNG et l'export SVG. Objectif : réduire les tâches répétitives et faciliter la production de cartes modifiables dans QGIS. Les données sources ne sont pas modifiées ; les exports ne peuvent pas écraser le projet ou les fichiers des couches.
 icon=
 experimental=False
